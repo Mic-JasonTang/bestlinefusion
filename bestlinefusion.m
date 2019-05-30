@@ -1,4 +1,4 @@
-function bestlinefusion(A,B, rowBegin, rowEnd, colBegin, colEnd, isPano)
+function bestlinefusion(A, B, rowBegin, rowEnd, colBegin, colEnd, isPano)
 %《图像拼接的改进算法》最佳缝合线算法 图像融合
 %先根据之前得到的H矩阵计算重叠区域Rect
 % A = imread(A);
@@ -13,7 +13,7 @@ function bestlinefusion(A,B, rowBegin, rowEnd, colBegin, colEnd, isPano)
 L=colBegin;
 R=colEnd;
 margin= R - L + 1;
-sprintf('L=%d, R=%d, margin=%d', L, R, margin)
+%sprintf('L=%d, R=%d, margin=%d', L, R, margin)
 % 计算得到重叠区域的差值图像 ?其实我不懂计算差值图像干嘛 ?只要计算重叠区域的大小就好了 为什么还要计算差值图 后面又没用到
 % Rect=zeros(H, margin);
 % for i=rowBegin:rowEnd-1
@@ -36,7 +36,7 @@ if isPano == 1
 else
     newW = 2*W - margin + 1;
 end
-sprintf('newW=%d', newW)
+%sprintf('newW=%d', newW)
 result = zeros(H, newW);
 %放路径的矩阵
 path=zeros(H, margin);
@@ -161,7 +161,7 @@ for i=rowBegin + 1:rowEnd - 1
 end
 %单独计算最后一行
 i=rowEnd;
-x=i-rowBegin+1;
+x=i-rowBegin+1;  % 保证从1开始
 for j=L:R
     y=j-L+1;
     color(y)=A(i,j)-B(x,y);
@@ -228,6 +228,7 @@ for j=1:margin
     small=0;
 end
 % 比较strength1里放的每条路径的强度值的总和 谁最小 就选path中对应的那一列的路径
+
 [minzhi,minth]=min(strength1);
 mypath=path(:,minth);
 % mypath放的就是最佳缝合线选出的路径 这条路径坐标是参考图A 右边是目标图B
@@ -272,11 +273,12 @@ end
 result=uint8(result);
 figure('Name', '最佳缝合线融合结果');
 imshow(result);
+imwrite(result, 'result.jpg');
 title('最佳缝合线融合结果');
 size_A = size(A);
 size_B = size(B);
 size_result = size(result);
-sprintf('A.shape=(%d, %d), B.shape=(%d, %d), result.shape=(%d, %d)',size_A(1), size_A(2), size_B(1), size_B(2), size_result(1),size_result(2))
+%sprintf('A.shape=(%d, %d), B.shape=(%d, %d), result.shape=(%d, %d)',size_A(1), size_A(2), size_B(1), size_B(2), size_result(1),size_result(2))
 for i=rowBegin:rowEnd-1
     x = i-rowBegin+1;
     result(i,L+mypath(x),1)=0;
@@ -285,4 +287,5 @@ for i=rowBegin:rowEnd-1
 end
 figure('Name', '最佳缝合线');
 imshow(result);
+imwrite(result, 'bestfusion_result_1.jpg');
 title('最佳缝合线');
